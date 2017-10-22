@@ -160,7 +160,6 @@ void teclado(unsigned char key, int x, int y)
 }
 
 typedef struct vertice Vertice;
-typedef struct vertice3d Vertice3d;
 typedef struct face Face;
 typedef struct listaV ListaV;
 typedef struct listaF ListaF;
@@ -173,16 +172,10 @@ struct vertice {
 	Vertice * prox;
 };
 
-struct vertice3d {
-    Vertice * v1;
-    Vertice * v2;
-    Vertice * v3;
-};
-
 struct face {
-    Vertice3d fv1;
-    Vertice3d fv2;
-    Vertice3d fv3;
+    Vertice * v1, * v2, * v3, * v4;
+    int vt1, vt2, vt3, vt4;
+    int vn1, vn2, vn3, vn4;
 
     Face * prox;
 };
@@ -235,12 +228,31 @@ void inserir_ultimoV(ListaV * lv, Vertice * v) {
 void inserir_ultimoF(ListaF * lf, Face * f) {
 	Face * aux = (Face *)malloc(sizeof(Face));
 
-	aux->fv1.v1 = f->fv1.v1;
-	aux->fv2.v2 = f->fv1.v2;
-	aux->fv3.v3 = f->fv1.v3;
+	aux->v1 = f->v1;
+    aux->vt1 = f->vt1;
+    aux->vn1 = f->vn1;
+
+    aux->v2 = f->v2;
+    aux->vt2 = f->vt2;
+    aux->vn2 = f->vn2;
+
+    aux->v3 = f->v3;
+    aux->vt3 = f->vt3;
+    aux->vn3 = f->vn3;
+
+    aux->v4 = f->v4;
+    aux->vt4 = f->vt4;
+    aux->vn4 = f->vn4;
 	aux->prox = NULL;
-	lf->fim->prox = aux;
-	lf->fim = aux;
+	if (lf->fim == NULL) {
+        lf->ini = aux;
+        lf->ini->prox = lf->fim;
+        lf->fim = aux;
+	}
+	else {
+        lf->fim->prox = aux;
+        lf->fim = aux;
+	}
 	lf->tam++;
 }
 
@@ -258,43 +270,53 @@ void imprimirListaV(ListaV * lv) {
 	printf("]\n");
 }
 
-void ler_obj() {
-    ifstream myfile ("C:\\Users\\Nicollas Mattos\\Dropbox\\Faculdade\\6º Semestre (2017.2)\\Computação gráfica - Tiago Sombra\\Trabalho\\trabalho\\modelo.obj", ios::in);
-    string line;
-    if(myfile.is_open()){
-        while(getline(myfile, line)){
-            line = line;
-            ifstream testfile (line.c_str(), ifstream::in);
-            if(testfile.is_open()){
-                cout << "O arquivo '"<< line <<"' existe\n";
-            }else{
-                cout << "O arquivo '" << line << "' nao existe\n";
-            }
-        }
-    }
-    /*
-    string line;
-    ifstream myfile ("example.txt"); // ifstream = padrão ios:in
-    if (myfile.is_open())
-    {
-    while (! myfile.eof() ) //enquanto end of file for false continua
-    {
-      getline (myfile,line); // como foi aberto em modo texto(padrão)
-                             //e não binário(ios::bin) pega cada linha
-      cout << line << endl;
-    }
-    myfile.close();
-    }*/
+void imprimirListaF(ListaF * lf) {
+	Face * aux = lf->ini;
+	printf("[ ");
+	while (aux != NULL) {
+		printf("{");
+		printf("(%lf, %lf, %lf)", aux->v1->pt1, aux->v1->pt2, aux->v1->pt3);
+		printf("/%d", aux->vt1);
+		printf("/%d", aux->vn1);
+		printf("}");
 
-    else cout << "Erro na abertura do arquivo \n";
+		printf(" | {");
+		printf("(%lf, %lf, %lf)", aux->v2->pt1, aux->v2->pt2, aux->v2->pt3);
+		printf("|%d", aux->vt2);
+		printf("|%d", aux->vn2);
+		printf("}");
 
-    myfile.close();
+		printf(" | {");
+		printf("(%lf, %lf, %lf)", aux->v3->pt1, aux->v3->pt2, aux->v3->pt3);
+		printf("|%d", aux->vt3);
+		printf("|%d", aux->vn3);
+		printf("}");
 
+		printf(" | {");
+		printf("(%lf, %lf, %lf)", aux->v4->pt1, aux->v4->pt2, aux->v4->pt3);
+		printf("|%d", aux->vt4);
+		printf("|%d", aux->vn4);
+		printf("}");
+		aux = aux->prox;
+	}
+	printf("]\n");
 }
 
-void ler_obj_c(ListaV * lv, ListaF * lf) {
+Vertice * buscarV(ListaV * lv, int v) {
+	int i = 1;
+	Vertice * aux = lv->ini;
+
+	while (aux != NULL && i < v) {
+		aux = aux->prox;
+		i++;
+	}
+
+	return aux;
+}
+
+void ler_obj(ListaV * lv, ListaF * lf) {
     FILE * fp;
-	fp = fopen("C:\\Users\\Nicollas Mattos\\Dropbox\\Faculdade\\6º Semestre (2017.2)\\Computação gráfica - Tiago Sombra\\Trabalho\\trabalho\\teste.txt", "r");
+	fp = fopen("C:\\Dev\\C-C++\\computacaoGrafica\\modelo.txt", "r");
 
     char linha[80];
     while (fgets(linha, sizeof(linha) - 1, fp) != NULL)
@@ -303,12 +325,43 @@ void ler_obj_c(ListaV * lv, ListaF * lf) {
         sscanf(linha, "%*[^|]|%lf|%lf|%lf[^\0]", &v1, &v2, &v3);
         printf("%lf %lf %lf\n", v1, v2, v3);*/
 
-        Vertice * v = (Vertice *)malloc(sizeof(Vertice));
+        if (linha[0] == 'v' && linha[1] != 't' && linha[1] != 'n') {
+            Vertice * v = (Vertice *)malloc(sizeof(Vertice));
 
-        sscanf(linha, "%*[^|]|%lf|%lf|%lf[^\0]", &v->pt1, &v->pt2, &v->pt3);
+            sscanf(linha, "%*[^|]|%lf|%lf|%lf[^\0]", &v->pt1, &v->pt2, &v->pt3);
 
-        inserir_ultimoV(lv, v);
-        imprimirListaV(lv);
+            inserir_ultimoV(lv, v);
+        }
+        if (linha[0] == 'f') {
+            Face * f = (Face *)malloc(sizeof(Face));
+
+            int pt1_1, pt1_2, pt1_3, pt2_1, pt2_2, pt2_3, pt3_1, pt3_2, pt3_3, pt4_1, pt4_2, pt4_3;
+
+            sscanf(linha, "%*[^|]|%d/%d/%d|%d/%d/%d|%d/%d/%d|%d/%d/%d[^\0]", &pt1_1, &pt1_2, &pt1_3, &pt2_1, &pt2_2, &pt2_3, &pt3_1, &pt3_2, &pt3_3, &pt4_1, &pt4_2, &pt4_3);
+            //printf("%d/%d/%d|%d/%d/%d|%d/%d/%d|%d/%d/%d\n",pt1_1, pt1_2, pt1_3, pt2_1, pt2_2, pt2_3, pt3_1, pt3_2, pt3_3, pt4_1, pt4_2, pt4_3);
+
+            Vertice * v1 = buscarV(lv, pt1_1);
+            f->v1 = v1;
+            f->vt1 = pt1_2;
+            f->vn1 = pt1_3;
+
+            Vertice * v2 = buscarV(lv, pt2_1);
+            f->v2 = v2;
+            f->vt2 = pt2_2;
+            f->vn2 = pt2_3;
+
+            Vertice * v3 = buscarV(lv, pt3_1);
+            f->v3 = v3;
+            f->vt3 = pt3_2;
+            f->vn3 = pt3_3;
+
+            Vertice * v4 = buscarV(lv, pt4_1);
+            f->v4 = v4;
+            f->vt4 = pt4_2;
+            f->vn4 = pt4_3;
+
+            inserir_ultimoF(lf, f);
+        }
     }
 }
 
@@ -322,16 +375,17 @@ int main(int argc, char **argv)
     glutInitWindowPosition(100, 100);
 
     // Abre a janela
-    glutCreateWindow("aula prática");
+    glutCreateWindow("Trabalho de computação gráfica");
 
     // Registra callbacks para alguns eventos
     //glutDisplayFunc(desenhaCena);
     //glutDisplayFunc(desenhaCena1);
-    //ler_obj();
 
 	ListaV * lv = criarV();
 	ListaF * lf = criarF();
-    ler_obj_c(lv, lf);
+    ler_obj(lv, lf);
+    imprimirListaV(lv);
+    imprimirListaF(lf);
 
     glutReshapeFunc(redimensiona);
     glutKeyboardFunc(teclado);
