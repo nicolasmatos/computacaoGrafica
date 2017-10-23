@@ -365,13 +365,47 @@ void ler_obj(ListaV * lv, ListaF * lf) {
     }
 }
 
+ListaV * lv = criarV();
+ListaF * lf = criarF();
+//imprimirListaV(lv);
+//imprimirListaF(lf);
+
+void desenhaObj(void)
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    // Começa a usar a cor azul
+    glColor3f(.5, .5, 1);
+
+    glPushMatrix();
+        // Move o sistema de coordenadas para a posição onde deseja-se desenhar
+        glTranslatef(x, y, 0);
+
+        glBegin (GL_LINE_LOOP); // Comece a desenhar uma linha primitiva
+            Face * aux = lf->ini;
+            while (aux != NULL) {
+                glVertex3f (aux->v1->pt1, aux->v1->pt2, aux->v1->pt3); // O canto inferior esquerdo
+                glVertex3f (aux->v2->pt1, aux->v2->pt2, aux->v2->pt3); // O canto inferior esquerdo
+                glVertex3f (aux->v3->pt1, aux->v3->pt2, aux->v3->pt3); // O canto inferior esquerdo
+                glVertex3f (aux->v4->pt1, aux->v4->pt2, aux->v4->pt3); // O canto inferior esquerdo
+
+                aux = aux->prox;
+            }
+        glEnd ();
+
+    glPopMatrix();
+
+    // Diz ao OpenGL para colocar o que desenhamos na tela
+    glutSwapBuffers();
+}
+
 // Rotina principal
 int main(int argc, char **argv)
 {
     // Configuração inicial da janela do GLUT
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
-    glutInitWindowSize(500, 500);
+    glutInitWindowSize(800, 800);
     glutInitWindowPosition(100, 100);
 
     // Abre a janela
@@ -381,11 +415,10 @@ int main(int argc, char **argv)
     //glutDisplayFunc(desenhaCena);
     //glutDisplayFunc(desenhaCena1);
 
-	ListaV * lv = criarV();
-	ListaF * lf = criarF();
+    //Chama a função que ler o arquivo obj e aramazena as informações em memória
     ler_obj(lv, lf);
-    imprimirListaV(lv);
-    imprimirListaF(lf);
+
+    glutDisplayFunc(desenhaObj);
 
     glutReshapeFunc(redimensiona);
     glutKeyboardFunc(teclado);
