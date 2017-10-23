@@ -16,8 +16,7 @@ const GLfloat velocidadeTangencial = 0.5;
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
 
-Vector3
-translatePoint(Vector3 v, float dx, float dy, float dz)
+Vector3 translatePoint(Vector3 v, float dx, float dy, float dz)
 {
   std::cout << "3x1 ponto original:\n" << v << std::endl;
 
@@ -41,66 +40,6 @@ translatePoint(Vector3 v, float dx, float dy, float dz)
     return v;
 }
 
-void desenhaCena(void)
-{
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    // Começa a usar a cor azul
-    glColor3f(.5, .5, 1);
-
-    glPushMatrix();
-        // Move o sistema de coordenadas para a posição onde deseja-se desenhar
-        glTranslatef(x, y, 0);
-        // Rotaciona o sistema de coordenadas para o ângulo de orientação,
-        // no eixo Z (como estamos em 2D, só faz sentido rotacionar em 'z')
-        // O ângulo esperado pela glRotate deve estar em graus
-        // Os argumentos "0, 0, 1" indicam que a rotação é no eixo Z
-        glRotatef(orientacaoEmGraus, 0, 0, 1);
-
-        // Desenha um triângulo na origem
-        glBegin(GL_TRIANGLES);
-            glVertex2f(-6, -3);
-            glVertex2f( 6,  0);
-            glVertex2f(-6,  3);
-        glEnd();
-    glPopMatrix();
-
-    // Diz ao OpenGL para colocar o que desenhamos na tela
-    glutSwapBuffers();
-}
-
-void desenhaCena1(void)
-{
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    // Começa a usar a cor azul
-    glColor3f(.5, .5, 1);
-
-    glPushMatrix();
-        // Move o sistema de coordenadas para a posição onde deseja-se desenhar
-        glTranslatef(x, y, 0);
-        // Rotaciona o sistema de coordenadas para o ângulo de orientação,
-        // no eixo Z (como estamos em 2D, só faz sentido rotacionar em 'z')
-        // O ângulo esperado pela glRotate deve estar em graus
-        // Os argumentos "0, 0, 1" indicam que a rotação é no eixo Z
-        glRotatef(orientacaoEmGraus, 0, 0, 1);
-
-        Vector3 p(-12, -6, 0);
-
-        p = translatePoint(p, 20, 50, 1);
-
-        // Desenha um triângulo na origem
-        glBegin(GL_TRIANGLES);
-            glVertex3f(p.x, p.y, p.z);
-            glVertex3f( 12,  0, 0);
-            glVertex3f(-12,  6, 0);
-        glEnd();
-    glPopMatrix();
-
-    // Diz ao OpenGL para colocar o que desenhamos na tela
-    glutSwapBuffers();
-}
-
 // Inicia algumas variáveis de estado
 void inicializa(void)
 {
@@ -119,7 +58,11 @@ void redimensiona(int w, int h)
    glViewport(0, 0, w, h);
    glMatrixMode(GL_PROJECTION);
    glLoadIdentity();
-   glOrtho(-100, 100, -100, 100, -1, 1);
+   //glOrtho(-100, 100, -100, 100, -1, 1);
+   gluPerspective(45, w/h,0.1,5000);
+   //gluLookAt(100,20,60, 0,0,0, 0,1,0);
+   gluLookAt(100,50,10, 0,0,0, 0,1,0);
+   glutPostRedisplay();
    glMatrixMode(GL_MODELVIEW);
    glLoadIdentity();
 }
@@ -406,18 +349,15 @@ int main(int argc, char **argv)
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
     glutInitWindowSize(800, 800);
-    glutInitWindowPosition(100, 100);
+    glutInitWindowPosition(300, 0);
 
     // Abre a janela
     glutCreateWindow("Trabalho de computação gráfica");
 
-    // Registra callbacks para alguns eventos
-    //glutDisplayFunc(desenhaCena);
-    //glutDisplayFunc(desenhaCena1);
-
     //Chama a função que ler o arquivo obj e aramazena as informações em memória
     ler_obj(lv, lf);
 
+    //Desenha o obj lido na tela
     glutDisplayFunc(desenhaObj);
 
     glutReshapeFunc(redimensiona);
