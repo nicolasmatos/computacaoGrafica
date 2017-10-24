@@ -171,7 +171,7 @@ Vertice * buscarV(ListaV * lv, int v) {
 
 void ler_obj(ListaV * lv, ListaF * lf) {
     FILE * fp;
-	fp = fopen("C:\\Dev\\C-C++\\computacaoGrafica\\modelo.txt", "r");
+	fp = fopen("C:\\Dev\\C-C++\\computacaoGrafica\\exOriginal.txt", "r");
 
     char linha[80];
     while (fgets(linha, sizeof(linha) - 1, fp) != NULL)

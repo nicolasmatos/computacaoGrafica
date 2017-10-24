@@ -1,4 +1,4 @@
-﻿<h1>trabalho de Computação Gráfica</h1>
+﻿<h1>Trabalho de Computação Gráfica</h1>
 
 Aplicação de leitura de um .obj e escrita na tela utilizando OpenGl
 
