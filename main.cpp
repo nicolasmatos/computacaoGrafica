@@ -21,9 +21,7 @@ void inicializa(void)
     glClearColor(0, 0, 0, 0);      // preto
 
     // imprime instruções
-    printf("Instrucoes:\n");
-    printf("\t+: gira no sentido horario\n");
-    printf("\t-: gira no sentido anti-horario\n\n");
+    printf("Trabalho de computacao grafica:\n");
 }
 
 // Callback de redimensionamento
@@ -295,20 +293,18 @@ void desenhaObj(void)
     glColor3f(.5, .5, 1);
 
     glPushMatrix();
-        // Move o sistema de coordenadas para a posição onde deseja-se desenhar
-        glTranslatef(x, y, 0);
 
-        glBegin (GL_LINE_LOOP); // Comece a desenhar uma linha primitiva
-            Face * aux = lf->ini;
-            while (aux != NULL) {
-                glVertex3f (aux->v1->pt1, aux->v1->pt2, aux->v1->pt3); // O canto inferior esquerdo
-                glVertex3f (aux->v2->pt1, aux->v2->pt2, aux->v2->pt3); // O canto inferior esquerdo
-                glVertex3f (aux->v3->pt1, aux->v3->pt2, aux->v3->pt3); // O canto inferior esquerdo
-                glVertex3f (aux->v4->pt1, aux->v4->pt2, aux->v4->pt3); // O canto inferior esquerdo
+    glBegin (GL_LINE_LOOP); // Comece a desenhar uma linha primitiva
+        Face * aux = lf->ini;
+        while (aux != NULL) {
+            glVertex3f (aux->v1->pt1, aux->v1->pt2, aux->v1->pt3);
+            glVertex3f (aux->v2->pt1, aux->v2->pt2, aux->v2->pt3);
+            glVertex3f (aux->v3->pt1, aux->v3->pt2, aux->v3->pt3);
+            glVertex3f (aux->v4->pt1, aux->v4->pt2, aux->v4->pt3);
 
-                aux = aux->prox;
-            }
-        glEnd ();
+            aux = aux->prox;
+        }
+    glEnd ();
 
     glPopMatrix();
 
@@ -316,24 +312,12 @@ void desenhaObj(void)
     glutSwapBuffers();
 }
 
-void translacao(float tx, float ty, float tz){
-    Face * aux = lf->ini;
+void translacao(double tx, double ty, double tz){
+    Vertice * aux = lv->ini;
     while (aux != NULL) {
-        aux->v1->pt1 += tx;
-        aux->v1->pt2 += ty;
-        aux->v1->pt3 += tz;
-
-        aux->v2->pt1 += tx;
-        aux->v2->pt2 += ty;
-        aux->v2->pt3 += tz;
-
-        aux->v3->pt1 += tx;
-        aux->v3->pt2 += ty;
-        aux->v3->pt3 += tz;
-
-        aux->v4->pt1 += tx;
-        aux->v4->pt2 += ty;
-        aux->v4->pt3 += tz;
+        aux->pt1 += tx;
+        aux->pt2 += ty;
+        aux->pt3 += tz;
 
         aux = aux->prox;
     }
@@ -342,23 +326,11 @@ void translacao(float tx, float ty, float tz){
 void rotacaoX(float angulo){
     angulo = angulo * M_PI / 180.0;
 
-    Face * aux = lf->ini;
+    Vertice * aux = lv->ini;
     while (aux != NULL) {
-        double v1 = aux->v1->pt2;
-        aux->v1->pt2 = (aux->v1->pt2 * cos(angulo)) - (aux->v1->pt3 * sin(angulo));
-        aux->v1->pt3 = (v1 * sin(angulo)) + (aux->v1->pt3 * cos(angulo));
-
-        double v2 = aux->v2->pt2;
-        aux->v2->pt2 = (aux->v2->pt2 * cos(angulo)) - (aux->v2->pt3 * sin(angulo));
-        aux->v2->pt3 = (v2 * sin(angulo)) + (aux->v2->pt3 * cos(angulo));
-
-        double v3 = aux->v3->pt2;
-        aux->v3->pt2 = (aux->v3->pt2 * cos(angulo)) - (aux->v3->pt3 * sin(angulo));
-        aux->v3->pt3 = (v3 * sin(angulo)) + (aux->v3->pt3 * cos(angulo));
-
-        double v4 = aux->v4->pt2;
-        aux->v4->pt2 = (aux->v4->pt2 * cos(angulo)) - (aux->v4->pt3 * sin(angulo));
-        aux->v4->pt3 = (v4 * sin(angulo)) + (aux->v4->pt3 * cos(angulo));
+        double v1 = aux->pt2;
+        aux->pt2 = (aux->pt2 * cos(angulo)) - (aux->pt3 * sin(angulo));
+        aux->pt3 = (v1 * sin(angulo)) + (aux->pt3 * cos(angulo));
 
         aux = aux->prox;
     }
@@ -367,23 +339,11 @@ void rotacaoX(float angulo){
 void rotacaoY(float angulo){
     angulo = angulo * M_PI / 180.0;
 
-    Face * aux = lf->ini;
+    Vertice * aux = lv->ini;
     while (aux != NULL) {
-        double v1 = aux->v1->pt3;
-        aux->v1->pt3 = (aux->v1->pt3 * cos(angulo)) - (aux->v1->pt1 * sin(angulo));
-        aux->v1->pt1 = (v1 * sin(angulo)) + (aux->v1->pt1 * cos(angulo));
-
-        double v2 = aux->v1->pt3;
-        aux->v2->pt3 = (aux->v2->pt3 * cos(angulo)) - (aux->v2->pt1 * sin(angulo));
-        aux->v2->pt1 = (v2 * sin(angulo)) + (aux->v2->pt1 * cos(angulo));
-
-        double v3 = aux->v3->pt3;
-        aux->v3->pt3 = (aux->v3->pt3 * cos(angulo)) - (aux->v3->pt1 * sin(angulo));
-        aux->v3->pt1 = (v3 * sin(angulo)) + (aux->v3->pt1 * cos(angulo));
-
-        double v4 = aux->v4->pt3;
-        aux->v4->pt3 = (aux->v4->pt3 * cos(angulo)) - (aux->v4->pt1 * sin(angulo));
-        aux->v4->pt1 = (v4 * sin(angulo)) + (aux->v4->pt1 * cos(angulo));
+        double v1 = aux->pt3;
+        aux->pt3 = (aux->pt3 * cos(angulo)) - (aux->pt1 * sin(angulo));
+        aux->pt1 = (v1 * sin(angulo)) + (aux->pt1 * cos(angulo));
 
         aux = aux->prox;
     }
@@ -392,46 +352,22 @@ void rotacaoY(float angulo){
 void rotacaoZ(float angulo){
     angulo = angulo * M_PI / 180.0;
 
-    Face * aux = lf->ini;
+    Vertice * aux = lv->ini;
     while (aux != NULL) {
-        double v1 = aux->v1->pt1;
-        aux->v1->pt1 = (aux->v1->pt1 * cos(angulo)) - (aux->v1->pt2 * sin(angulo));
-        aux->v1->pt2 = (v1 * sin(angulo)) + (aux->v1->pt2 * cos(angulo));
-
-        double v2 = aux->v2->pt1;
-        aux->v2->pt1 = (aux->v2->pt1 * cos(angulo)) - (aux->v2->pt2 * sin(angulo));
-        aux->v2->pt2 = (v2 * sin(angulo)) + (aux->v2->pt2 * cos(angulo));
-
-        double v3 = aux->v1->pt1;
-        aux->v3->pt1 = (aux->v3->pt1 * cos(angulo)) - (aux->v3->pt2 * sin(angulo));
-        aux->v3->pt2 = (v3 * sin(angulo)) + (aux->v3->pt2 * cos(angulo));
-
-        double v4 = aux->v4->pt1;
-        aux->v4->pt1 = (aux->v4->pt1 * cos(angulo)) - (aux->v4->pt2 * sin(angulo));
-        aux->v4->pt2 = (v4 * sin(angulo)) + (aux->v4->pt2 * cos(angulo));
+        double v1 = aux->pt1;
+        aux->pt1 = (aux->pt1 * cos(angulo)) - (aux->pt2 * sin(angulo));
+        aux->pt2 = (v1 * sin(angulo)) + (aux->pt2 * cos(angulo));
 
         aux = aux->prox;
     }
 }
 
 void escala(float e, float ex, float ey, float ez){
-    Face * aux = lf->ini;
+    Vertice * aux = lv->ini;
     while (aux != NULL) {
-        aux->v1->pt1 = (aux->v1->pt1 * e) + ((1 - e) * ex);
-        aux->v1->pt2 = (aux->v1->pt2 * e) + ((1 - e) * ey);
-        aux->v1->pt3 = (aux->v1->pt3 * e) + ((1 - e) * ez);
-
-        aux->v2->pt1 = (aux->v2->pt1 * e) + ((1 - e) * ex);
-        aux->v2->pt2 = (aux->v2->pt2 * e) + ((1 - e) * ey);
-        aux->v2->pt3 = (aux->v2->pt3 * e) + ((1 - e) * ez);
-
-        aux->v3->pt1 = (aux->v3->pt1 * e) + ((1 - e) * ex);
-        aux->v3->pt2 = (aux->v3->pt2 * e) + ((1 - e) * ey);
-        aux->v3->pt3 = (aux->v3->pt3 * e) + ((1 - e) * ez);
-
-        aux->v4->pt1 = (aux->v4->pt1 * e) + ((1 - e) * ex);
-        aux->v4->pt2 = (aux->v4->pt2 * e) + ((1 - e) * ey);
-        aux->v4->pt3 = (aux->v4->pt3 * e) + ((1 - e) * ez);
+        aux->pt1 = (aux->pt1 * e) + ((1 - e) * ex);
+        aux->pt2 = (aux->pt2 * e) + ((1 - e) * ey);
+        aux->pt3 = (aux->pt3 * e) + ((1 - e) * ez);
 
         aux = aux->prox;
     }
@@ -454,12 +390,14 @@ int main(int argc, char **argv)
 
     //Desenha o obj lido na tela
     glutDisplayFunc(desenhaObj);
-    //translacao(2,0,0);
-    //glutDisplayFunc(desenhaObj);
+    //translacao(2,-20,-30);
+    //rotacaoX(10);
+    //rotacaoY(90);
+    //rotacaoZ(120);
+    //escala(0.5, 10, 0, 0);
 
     glutReshapeFunc(redimensiona);
     glutKeyboardFunc(teclado);
-    //glutTimerFunc(0, atualiza, 0);
     inicializa();
 
     // Entra em loop e nunca sai
