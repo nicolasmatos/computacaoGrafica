@@ -14,66 +14,6 @@ const GLfloat velocidadeTangencial = 0.5;
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
 
-// Inicia algumas variáveis de estado
-void inicializa(void)
-{
-    // cor para limpar a tela
-    glClearColor(0, 0, 0, 0);      // preto
-
-    // imprime instruções
-    printf("Trabalho de computacao grafica:\n");
-}
-
-// Callback de redimensionamento
-void redimensiona(int w, int h)
-{
-   glViewport(0, 0, w, h);
-   glMatrixMode(GL_PROJECTION);
-   glLoadIdentity();
-   //glOrtho(-100, 100, -100, 100, -1, 1);
-   gluPerspective(45, w/h,0.1,5000);
-   //gluLookAt(100,20,60, 0,0,0, 0,1,0);
-   gluLookAt(100,50,10, 0,0,0, 0,1,0);
-   glutPostRedisplay();
-   glMatrixMode(GL_MODELVIEW);
-   glLoadIdentity();
-}
-
-void atualiza(int idx) {
-    // O ângulo esperado pelas funções "cos" e "sin" da math.h devem
-    // estar em radianos
-    GLfloat orientacaoEmRadianos = grausParaRadianos(orientacaoEmGraus);
-    x += cos(orientacaoEmRadianos) * velocidadeTangencial;
-    y += sin(orientacaoEmRadianos) * velocidadeTangencial;
-
-    orientacaoEmGraus += velocidadeAngular;
-
-    glutPostRedisplay();
-    glutTimerFunc(17, atualiza, 0);
-}
-
-// Callback de evento de teclado
-void teclado(unsigned char key, int x, int y)
-{
-    switch(key)
-    {
-        // Tecla ESC
-        case 27:
-            exit(0);
-            break;
-        case '+':
-        case '=':
-            velocidadeAngular += 0.5;
-            break;
-        case '-':
-        case '_':
-            velocidadeAngular -= 0.5;
-            break;
-        default:
-            break;
-    }
-}
-
 typedef struct vertice Vertice;
 typedef struct face Face;
 typedef struct listaV ListaV;
@@ -289,9 +229,6 @@ void desenhaObj(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Começa a usar a cor azul
-    glColor3f(.5, .5, 1);
-
     glPushMatrix();
 
     glBegin (GL_LINE_LOOP); // Comece a desenhar uma linha primitiva
@@ -323,7 +260,7 @@ void translacao(double tx, double ty, double tz){
     }
 }
 
-void rotacaoX(float angulo){
+void rotacaoX(double angulo){
     angulo = angulo * M_PI / 180.0;
 
     Vertice * aux = lv->ini;
@@ -336,7 +273,7 @@ void rotacaoX(float angulo){
     }
 }
 
-void rotacaoY(float angulo){
+void rotacaoY(double angulo){
     angulo = angulo * M_PI / 180.0;
 
     Vertice * aux = lv->ini;
@@ -349,7 +286,7 @@ void rotacaoY(float angulo){
     }
 }
 
-void rotacaoZ(float angulo){
+void rotacaoZ(double angulo){
     angulo = angulo * M_PI / 180.0;
 
     Vertice * aux = lv->ini;
@@ -362,7 +299,7 @@ void rotacaoZ(float angulo){
     }
 }
 
-void escala(float e, float ex, float ey, float ez){
+void escala(double e, double ex, double ey, double ez){
     Vertice * aux = lv->ini;
     while (aux != NULL) {
         aux->pt1 = (aux->pt1 * e) + ((1 - e) * ex);
@@ -371,6 +308,116 @@ void escala(float e, float ex, float ey, float ez){
 
         aux = aux->prox;
     }
+}
+
+// Inicia algumas variáveis de estado
+void inicializa(void)
+{
+    // cor para limpar a tela
+    glClearColor(0, 0, 0, 0);      // preto
+
+    printf("Trabalho de computacao grafica:\n");
+    // imprime instruções
+    printf("===================================Instrucoes==================================\n");
+		printf("1\. +: Translacao positiva\n"
+			"2\. -: Translacao negativa\n"
+			"3\. Seta cima: Escala de aumento\n"
+			"4\. Seta baixo: Escala de diminuicao\n"
+			"5\. Seta esquerda: Rotaciona negativo\n"
+			"6\. Seta direita: Rotaciona positivo\n"
+			"7\. R: Muda cor para vermelho\n"
+			"8\. G: Muda cor para verde\n"
+			"9\. B: Muda cor para azul\n"
+			"10\. F1: Reseta para cor padrao\n");
+    printf("===============================================================================\n");
+}
+
+// Callback de redimensionamento
+void redimensiona(int w, int h)
+{
+   glViewport(0, 0, w, h);
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+   //glOrtho(-100, 100, -100, 100, -1, 1);
+   gluPerspective(45, w/h,0.1,5000);
+   //gluLookAt(100,20,60, 0,0,0, 0,1,0);
+   gluLookAt(100,50,10, 0,0,0, 0,1,0);
+   glutPostRedisplay();
+   glMatrixMode(GL_MODELVIEW);
+   glLoadIdentity();
+}
+
+void atualiza(int idx) {
+    // O ângulo esperado pelas funções "cos" e "sin" da math.h devem
+    // estar em radianos
+    GLfloat orientacaoEmRadianos = grausParaRadianos(orientacaoEmGraus);
+    x += cos(orientacaoEmRadianos) * velocidadeTangencial;
+    y += sin(orientacaoEmRadianos) * velocidadeTangencial;
+
+    orientacaoEmGraus += velocidadeAngular;
+
+    glutPostRedisplay();
+    glutTimerFunc(17, atualiza, 0);
+}
+
+double translacaoEvento = 0;
+// Callback de evento de teclado
+void teclado(unsigned char key, int x, int y)
+{
+    switch (key) {
+        case 'R':
+        case 'r':// muda a cor corrente para vermelho
+            glColor3f(1.0f, 0.0f, 0.0f);
+            break;
+        case 'G':
+        case 'g':// muda a cor corrente para verde
+            glColor3f(0.0f, 1.0f, 0.0f);
+            break;
+        case 'B':
+        case 'b':// muda a cor corrente para azul
+            glColor3f(0.0f, 0.0f, 1.0f);
+            break;
+        case '+':
+            translacao(translacaoEvento + 1, 0, 0);
+            break;
+        case '-':
+            translacao(translacaoEvento - 1, 0, 0);
+            break;
+    }
+    glutPostRedisplay();
+}
+
+double anguloEvento = 0;
+double txEvento;
+double escalaEvento = 1;
+void setas(int key, int x, int y)
+{
+    if(key == GLUT_KEY_LEFT) {
+        anguloEvento = anguloEvento - 1;
+        //translacao(0,0,txEvento);
+        rotacaoY(anguloEvento);
+    }
+
+   if(key == GLUT_KEY_RIGHT) {
+        anguloEvento = anguloEvento + 1;
+        //translacao(0,0,txEvento);
+        rotacaoY(anguloEvento);
+    }
+
+    if(key == GLUT_KEY_DOWN) {
+        escalaEvento = escalaEvento - 0.1;
+        escala(escalaEvento,0,0,0);
+    }
+
+    if(key == GLUT_KEY_UP) {
+        escalaEvento = escalaEvento + 0.1;
+        escala(escalaEvento,0,0,0);
+    }
+
+    if(key == GLUT_KEY_F1) {
+        glColor3f(.5, .5, 1);
+    }
+    glutPostRedisplay();
 }
 
 // Rotina principal
@@ -388,8 +435,10 @@ int main(int argc, char **argv)
     //Chama a função que ler o arquivo obj e aramazena as informações em memória
     ler_obj(lv, lf);
 
-    //Desenha o obj lido na tela
+    //Seta a cor e desenha o obj lido na tela
+    glColor3f(.5, .5, 1);
     glutDisplayFunc(desenhaObj);
+
     //translacao(2,-20,-30);
     //rotacaoX(10);
     //rotacaoY(90);
@@ -397,7 +446,11 @@ int main(int argc, char **argv)
     //escala(0.5, 10, 0, 0);
 
     glutReshapeFunc(redimensiona);
+    //Funções de teclas ASCI
     glutKeyboardFunc(teclado);
+    //Função de teclado especial
+    glutSpecialFunc(setas);
+
     inicializa();
 
     // Entra em loop e nunca sai
