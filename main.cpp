@@ -1,6 +1,4 @@
 #include <GL/glut.h>
-#include "Matrices.h"
-#include "Vectors.h"
 #include <iostream>
 #include <stdio.h>
 #include <math.h>
@@ -15,30 +13,6 @@ const GLfloat velocidadeTangencial = 0.5;
 
 #define radianoParaGraus(radianos) (radianos * (180.0 / M_PI))
 #define grausParaRadianos(graus) ((graus * M_PI) / 180.0)
-
-Vector3 translatePoint(Vector3 v, float dx, float dy, float dz)
-{
-  std::cout << "3x1 ponto original:\n" << v << std::endl;
-
- /*constroe e inicializa a matriz*/
-  Matrix4 m;
-  m.identity();
-  std::cout << "4x4 matrix identidade:\n" << m << std::endl;
-
-
-    /*multiplica a matriz identidade pelo vetor de translação*/
-    m.translate(dx, dy, dz);
-    std::cout << "4x4 matrix de translação:\n" << m << std::endl;
-
-    /*Vetor resultande da multiplicação*/
-    Vector4 vt(v.x, v.y, v.z, 1);
-    vt = m*vt;
-    std::cout << "4x1 ponto transladado:\n" << vt << std::endl;
-
-    v.set(vt.x, vt.y, vt.z);
-
-    return v;
-}
 
 // Inicia algumas variáveis de estado
 void inicializa(void)
@@ -342,6 +316,127 @@ void desenhaObj(void)
     glutSwapBuffers();
 }
 
+void translacao(float tx, float ty, float tz){
+    Face * aux = lf->ini;
+    while (aux != NULL) {
+        aux->v1->pt1 += tx;
+        aux->v1->pt2 += ty;
+        aux->v1->pt3 += tz;
+
+        aux->v2->pt1 += tx;
+        aux->v2->pt2 += ty;
+        aux->v2->pt3 += tz;
+
+        aux->v3->pt1 += tx;
+        aux->v3->pt2 += ty;
+        aux->v3->pt3 += tz;
+
+        aux->v4->pt1 += tx;
+        aux->v4->pt2 += ty;
+        aux->v4->pt3 += tz;
+
+        aux = aux->prox;
+    }
+}
+
+void rotacaoX(float angulo){
+    angulo = angulo * M_PI / 180.0;
+
+    Face * aux = lf->ini;
+    while (aux != NULL) {
+        double v1 = aux->v1->pt2;
+        aux->v1->pt2 = (aux->v1->pt2 * cos(angulo)) - (aux->v1->pt3 * sin(angulo));
+        aux->v1->pt3 = (v1 * sin(angulo)) + (aux->v1->pt3 * cos(angulo));
+
+        double v2 = aux->v2->pt2;
+        aux->v2->pt2 = (aux->v2->pt2 * cos(angulo)) - (aux->v2->pt3 * sin(angulo));
+        aux->v2->pt3 = (v2 * sin(angulo)) + (aux->v2->pt3 * cos(angulo));
+
+        double v3 = aux->v3->pt2;
+        aux->v3->pt2 = (aux->v3->pt2 * cos(angulo)) - (aux->v3->pt3 * sin(angulo));
+        aux->v3->pt3 = (v3 * sin(angulo)) + (aux->v3->pt3 * cos(angulo));
+
+        double v4 = aux->v4->pt2;
+        aux->v4->pt2 = (aux->v4->pt2 * cos(angulo)) - (aux->v4->pt3 * sin(angulo));
+        aux->v4->pt3 = (v4 * sin(angulo)) + (aux->v4->pt3 * cos(angulo));
+
+        aux = aux->prox;
+    }
+}
+
+void rotacaoY(float angulo){
+    angulo = angulo * M_PI / 180.0;
+
+    Face * aux = lf->ini;
+    while (aux != NULL) {
+        double v1 = aux->v1->pt3;
+        aux->v1->pt3 = (aux->v1->pt3 * cos(angulo)) - (aux->v1->pt1 * sin(angulo));
+        aux->v1->pt1 = (v1 * sin(angulo)) + (aux->v1->pt1 * cos(angulo));
+
+        double v2 = aux->v1->pt3;
+        aux->v2->pt3 = (aux->v2->pt3 * cos(angulo)) - (aux->v2->pt1 * sin(angulo));
+        aux->v2->pt1 = (v2 * sin(angulo)) + (aux->v2->pt1 * cos(angulo));
+
+        double v3 = aux->v3->pt3;
+        aux->v3->pt3 = (aux->v3->pt3 * cos(angulo)) - (aux->v3->pt1 * sin(angulo));
+        aux->v3->pt1 = (v3 * sin(angulo)) + (aux->v3->pt1 * cos(angulo));
+
+        double v4 = aux->v4->pt3;
+        aux->v4->pt3 = (aux->v4->pt3 * cos(angulo)) - (aux->v4->pt1 * sin(angulo));
+        aux->v4->pt1 = (v4 * sin(angulo)) + (aux->v4->pt1 * cos(angulo));
+
+        aux = aux->prox;
+    }
+}
+
+void rotacaoZ(float angulo){
+    angulo = angulo * M_PI / 180.0;
+
+    Face * aux = lf->ini;
+    while (aux != NULL) {
+        double v1 = aux->v1->pt1;
+        aux->v1->pt1 = (aux->v1->pt1 * cos(angulo)) - (aux->v1->pt2 * sin(angulo));
+        aux->v1->pt2 = (v1 * sin(angulo)) + (aux->v1->pt2 * cos(angulo));
+
+        double v2 = aux->v2->pt1;
+        aux->v2->pt1 = (aux->v2->pt1 * cos(angulo)) - (aux->v2->pt2 * sin(angulo));
+        aux->v2->pt2 = (v2 * sin(angulo)) + (aux->v2->pt2 * cos(angulo));
+
+        double v3 = aux->v1->pt1;
+        aux->v3->pt1 = (aux->v3->pt1 * cos(angulo)) - (aux->v3->pt2 * sin(angulo));
+        aux->v3->pt2 = (v3 * sin(angulo)) + (aux->v3->pt2 * cos(angulo));
+
+        double v4 = aux->v4->pt1;
+        aux->v4->pt1 = (aux->v4->pt1 * cos(angulo)) - (aux->v4->pt2 * sin(angulo));
+        aux->v4->pt2 = (v4 * sin(angulo)) + (aux->v4->pt2 * cos(angulo));
+
+        aux = aux->prox;
+    }
+}
+
+void escala(float e, float ex, float ey, float ez){
+    Face * aux = lf->ini;
+    while (aux != NULL) {
+        aux->v1->pt1 = (aux->v1->pt1 * e) + ((1 - e) * ex);
+        aux->v1->pt2 = (aux->v1->pt2 * e) + ((1 - e) * ey);
+        aux->v1->pt3 = (aux->v1->pt3 * e) + ((1 - e) * ez);
+
+        aux->v2->pt1 = (aux->v2->pt1 * e) + ((1 - e) * ex);
+        aux->v2->pt2 = (aux->v2->pt2 * e) + ((1 - e) * ey);
+        aux->v2->pt3 = (aux->v2->pt3 * e) + ((1 - e) * ez);
+
+        aux->v3->pt1 = (aux->v3->pt1 * e) + ((1 - e) * ex);
+        aux->v3->pt2 = (aux->v3->pt2 * e) + ((1 - e) * ey);
+        aux->v3->pt3 = (aux->v3->pt3 * e) + ((1 - e) * ez);
+
+        aux->v4->pt1 = (aux->v4->pt1 * e) + ((1 - e) * ex);
+        aux->v4->pt2 = (aux->v4->pt2 * e) + ((1 - e) * ey);
+        aux->v4->pt3 = (aux->v4->pt3 * e) + ((1 - e) * ez);
+
+        aux = aux->prox;
+    }
+}
+
 // Rotina principal
 int main(int argc, char **argv)
 {
@@ -359,6 +454,8 @@ int main(int argc, char **argv)
 
     //Desenha o obj lido na tela
     glutDisplayFunc(desenhaObj);
+    //translacao(2,0,0);
+    //glutDisplayFunc(desenhaObj);
 
     glutReshapeFunc(redimensiona);
     glutKeyboardFunc(teclado);
