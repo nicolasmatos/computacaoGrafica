@@ -176,9 +176,6 @@ void ler_obj(ListaV * lv, ListaF * lf) {
     char linha[80];
     while (fgets(linha, sizeof(linha) - 1, fp) != NULL)
     {
-        /*double v1, v2, v3;
-        sscanf(linha, "%*[^|]|%lf|%lf|%lf[^\0]", &v1, &v2, &v3);
-        printf("%lf %lf %lf\n", v1, v2, v3);*/
 
         if (linha[0] == 'v' && linha[1] != 't' && linha[1] != 'n') {
             Vertice * v = (Vertice *)malloc(sizeof(Vertice));
@@ -193,7 +190,6 @@ void ler_obj(ListaV * lv, ListaF * lf) {
             int pt1_1, pt1_2, pt1_3, pt2_1, pt2_2, pt2_3, pt3_1, pt3_2, pt3_3, pt4_1, pt4_2, pt4_3;
 
             sscanf(linha, "%*[^|]|%d/%d/%d|%d/%d/%d|%d/%d/%d|%d/%d/%d[^\0]", &pt1_1, &pt1_2, &pt1_3, &pt2_1, &pt2_2, &pt2_3, &pt3_1, &pt3_2, &pt3_3, &pt4_1, &pt4_2, &pt4_3);
-            //printf("%d/%d/%d|%d/%d/%d|%d/%d/%d|%d/%d/%d\n",pt1_1, pt1_2, pt1_3, pt2_1, pt2_2, pt2_3, pt3_1, pt3_2, pt3_3, pt4_1, pt4_2, pt4_3);
 
             Vertice * v1 = buscarV(lv, pt1_1);
             f->v1 = v1;
