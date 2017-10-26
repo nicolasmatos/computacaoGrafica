@@ -225,8 +225,6 @@ void desenhaObj(void)
 {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glPushMatrix();
-
     glBegin (GL_LINE_LOOP); // Comece a desenhar uma linha primitiva
         Face * aux = lf->ini;
         while (aux != NULL) {
@@ -238,8 +236,6 @@ void desenhaObj(void)
             aux = aux->prox;
         }
     glEnd ();
-
-    glPopMatrix();
 
     // Diz ao OpenGL para colocar o que desenhamos na tela
     glutSwapBuffers();
